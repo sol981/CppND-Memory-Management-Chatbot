@@ -45,6 +45,58 @@ ChatBot::~ChatBot()
 //// STUDENT CODE
 ////
 
+ChatBot::ChatBot(ChatBot& cb)
+{
+    std::cout << "ChatBot copy constructor" << std::endl;
+    
+    // invalidate data handles
+    _chatLogic = nullptr;
+    _rootNode = nullptr;
+
+    // load image into heap memory
+    _image = new wxBitmap();
+    _image = cb.GetImageHandle();
+    _chatLogic = cb.GetChatLogicHandle();
+}
+
+ChatBot::ChatBot(ChatBot&& cb)
+{
+    std::cout << "ChatBot move constructor" << std::endl;
+    delete _image;
+    delete _chatLogic;
+
+    // load image into heap memory
+    _image = std::move(cb.GetImageHandle());
+    _chatLogic = std::move(cb.GetChatLogicHandle());
+}
+
+ChatBot& ChatBot::operator=(ChatBot& cb)
+{
+    std::cout << "ChatBot copy assignment operator" << std::endl;
+    if (this == &cb)
+	{		
+        return *this;	
+    }
+	delete[] this;
+
+    _image = new wxBitmap();
+    _image = cb.GetImageHandle();
+    _chatLogic = cb.GetChatLogicHandle();
+
+    return *this;
+}
+
+ChatBot& ChatBot::operator=(ChatBot&& cb)
+{
+    std::cout << "ChatBot move assignment operator" << std::endl;
+	delete[] this;
+
+    _image = std::move(cb.GetImageHandle());
+    _chatLogic = std::move(cb.GetChatLogicHandle());
+    
+    return *this;
+}
+
 ////
 //// EOF STUDENT CODE
 
