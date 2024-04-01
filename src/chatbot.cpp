@@ -45,58 +45,65 @@ ChatBot::~ChatBot()
 //// STUDENT CODE
 ////
 
-ChatBot::ChatBot(ChatBot& cb)
-{
-    std::cout << "ChatBot copy constructor" << std::endl;
-    
-    // invalidate data handles
-    _chatLogic = nullptr;
-    _rootNode = nullptr;
+ChatBot::ChatBot(const ChatBot &source) {
+    std::cout << "ChatBot Copy Constructor" << std::endl;
 
-    // load image into heap memory
-    _image = new wxBitmap();
-    _image = cb.GetImageHandle();
-    _chatLogic = cb.GetChatLogicHandle();
+    // image is owned, so we allocate the memory and copy content
+    _image = new wxBitmap;
+    *_image = *source._image;
+
+    // not-owned, so we just copy pointers
+    _currentNode = source._currentNode;
+    _rootNode = source._rootNode;
+    _chatLogic = source._chatLogic;
 }
 
-ChatBot::ChatBot(ChatBot&& cb)
-{
-    std::cout << "ChatBot move constructor" << std::endl;
-    delete _image;
-    delete _chatLogic;
-
-    // load image into heap memory
-    _image = std::move(cb.GetImageHandle());
-    _chatLogic = std::move(cb.GetChatLogicHandle());
-}
-
-ChatBot& ChatBot::operator=(ChatBot& cb)
-{
-    std::cout << "ChatBot copy assignment operator" << std::endl;
-    if (this == &cb)
-	{		
-        return *this;	
+ChatBot& ChatBot::operator=(const ChatBot &source) {
+    std::cout << "ChatBot Copy Assignment" << std::endl;
+    if (this == &source) {
+        return *this;
     }
-	delete[] this;
 
-    _image = new wxBitmap();
-    _image = cb.GetImageHandle();
-    _chatLogic = cb.GetChatLogicHandle();
+    delete _image;
+    _image = new wxBitmap;
+    *_image = *source._image;
+
+    _currentNode = source._currentNode;
+    _rootNode = source._rootNode;
+    _chatLogic = source._chatLogic;
 
     return *this;
 }
 
-ChatBot& ChatBot::operator=(ChatBot&& cb)
-{
-    std::cout << "ChatBot move assignment operator" << std::endl;
-	delete[] this;
+ChatBot::ChatBot(ChatBot &&source) noexcept {
+    std::cout << "ChatBot Move Constructor" << std::endl;
+    _image = source._image;
+    _currentNode = source._currentNode;
+    _rootNode = source._rootNode;
+    _chatLogic = source._chatLogic;
 
-    _image = std::move(cb.GetImageHandle());
-    _chatLogic = std::move(cb.GetChatLogicHandle());
-    
-    return *this;
+    source._image = nullptr;
+    source._currentNode = nullptr;
+    source._rootNode = nullptr;
+    source._chatLogic = nullptr;
 }
 
+ChatBot& ChatBot::operator=(ChatBot &&source) noexcept {
+    std::cout << "ChatBot Move Assignment" << std::endl;
+    if (this == &source) {
+        return *this;
+    }
+
+    delete _image;
+    _image = new wxBitmap;
+    *_image = *source._image;
+
+    _currentNode = source._currentNode;
+    _rootNode = source._rootNode;
+    _chatLogic = source._chatLogic;
+
+    return *this;
+}
 ////
 //// EOF STUDENT CODE
 
